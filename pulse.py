@@ -1,50 +1,52 @@
 import streamlit as st
 import pandas as pd
 
-st.title("📈 Bitcoin Hourly Price Change Analysis")
+# Load the dataset directly from file
+DATA_FILE = "Bitcoin Pulse  Hourly Dataset from Markets Trends and Fear.csv"
 
-# Upload file
-uploaded_file = st.file_uploader("Upload your Bitcoin CSV file", type=["csv"])
+# Load and process the data
+@st.cache_data
+def load_data():
+    df = pd.read_csv(DATA_FILE)
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    df['price_change'] = df['BTC_USDT_1h_close'] - df['BTC_USDT_1h_open']
+    df['change_type'] = df['price_change'].apply(
+        lambda x: 'Increase' if x > 0 else ('Decrease' if x < 0 else 'No Change')
+    )
+    return df
 
-# Check if a file is uploaded
-if uploaded_file is not None:
-    # Load and process the data
-    try:
-        df = pd.read_csv(uploaded_file)
+# App title
+st.title("📊 Bitcoin Hourly Price Change Analysis")
 
-        # Check if required columns exist
-        if 'timestamp' in df.columns and 'BTC_USDT_1h_close' in df.columns and 'BTC_USDT_1h_open' in df.columns:
-            df['timestamp'] = pd.to_datetime(df['timestamp'])
-            df['price_change'] = df['BTC_USDT_1h_close'] - df['BTC_USDT_1h_open']
-            df['change_type'] = df['price_change'].apply(
-                lambda x: 'Increase' if x > 0 else ('Decrease' if x < 0 else 'No Change')
-            )
+try:
+    df = load_data()
 
-            # Date Range Selection
-            start_date = st.date_input("Start date", df['timestamp'].min().date())
-            end_date = st.date_input("End date", df['timestamp'].max().date())
-            filtered_df = df[(df['timestamp'].dt.date >= start_date) & (df['timestamp'].dt.date <= end_date)]
+    # Date filter
+    start_date = st.date_input("Start date", df['timestamp'].min().date())
+    end_date = st.date_input("End date", df['timestamp'].max().date())
 
-            # Display summary
-            st.subheader("Price Movement Summary")
-            summary = filtered_df['change_type'].value_counts().rename_axis('Change').reset_index(name='Count')
-            st.dataframe(summary)
+    # Filter data
+    filtered_df = df[(df['timestamp'].dt.date >= start_date) & (df['timestamp'].dt.date <= end_date)]
 
-            # Charts
-            st.subheader("Bitcoin Hourly Closing Price")
-            st.line_chart(filtered_df.set_index('timestamp')['BTC_USDT_1h_close'])
+    # Summary
+    st.subheader("Price Movement Summary")
+    summary = filtered_df['change_type'].value_counts().rename_axis('Change').reset_index(name='Count')
+    st.dataframe(summary)
 
-            st.subheader("Hourly Price Change")
-            st.bar_chart(filtered_df.set_index('timestamp')['price_change'])
+    # Charts
+    st.subheader("Bitcoin Hourly Closing Price")
+    st.line_chart(filtered_df.set_index('timestamp')['BTC_USDT_1h_close'])
 
-            # Raw data toggle
-            if st.checkbox("Show raw data"):
-                st.write(filtered_df[['timestamp', 'BTC_USDT_1h_open', 'BTC_USDT_1h_close', 'price_change', 'change_type']])
-        else:
-            st.error("Uploaded file is missing required columns: 'timestamp', 'BTC_USDT_1h_open', or 'BTC_USDT_1h_close'.")
+    st.subheader("Hourly Price Change")
+    st.bar_chart(filtered_df.set_index('timestamp')['price_change'])
 
-    except Exception as e:
-        st.error(f"⚠️ Error processing file: {e}")
+    # Show raw data
+    if st.checkbox("Show raw data"):
+        st.write(filtered_df[['timestamp', 'BTC_USDT_1h_open', 'BTC_USDT_1h_close', 'price_change', 'change_type']])
 
-else:
-    st.info("📂 Please upload a CSV file to begin.")
+except FileNotFoundError:
+    st.error(f"⚠️ File '{DATA_FILE}' not found. Please make sure it's in the same directory as this app.")
+except KeyError as e:
+    st.error(f"⚠️ Missing column in dataset: {e}")
+except Exception as e:
+    st.error(f"⚠️ An error occurred: {e}")
