@@ -7,7 +7,8 @@ st.set_page_config(page_title="Bitcoin Dashboard", layout="wide")
 # --- Logo and Title ---
 col1, col2 = st.columns([1, 6])
 with col1:
-    st.image("C:\Users\Administrator\Pictures\kanchanara-5ixVD22x22o-unsplash.jpg")
+    st.image(st.image(r"C:\Users\Administrator\Pictures\kanchanara-5ixVD22x22o-unsplash.jpg")
+
 with col2:
     st.title("🚀 Bitcoin Hourly Price Change Analysis")
 
