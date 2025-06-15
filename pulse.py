@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # Load the dataset directly from file
-DATA_FILE = DATA_FILE = DATA_FILE = r"C:\Users\Administrator\Desktop\class work\Bitcoin Pulse Hourly Dataset from Markets Trends and Fear.csv"
+DATA_FILE = DATA_FILE = DATA_FILE = r"C:\Users\Administrator\Documents\Bitcoin Pulse  Hourly Dataset from Markets Trends and Fear.csv"
 
 
 
