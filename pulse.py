@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 # Load the dataset directly from file
-DATA_FILE = "Bitcoin Pulse  Hourly Dataset from Markets Trends and Fear.csv"
+DATA_FILE = "C:\Users\Administrator\Desktop\class work\Bitcoin Pulse  Hourly Dataset from Markets Trends and Fear.csv"
 
 # Load and process the data
 @st.cache_data
