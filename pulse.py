@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # Load Data
 @st.cache_data
@@ -32,14 +31,9 @@ st.dataframe(summary)
 st.subheader("Bitcoin Hourly Closing Price")
 st.line_chart(filtered_df.set_index('timestamp')['BTC_USDT_1h_close'])
 
-# Bar Chart of Price Changes
-st.subheader("Hourly Price Change Bar Plot")
-fig, ax = plt.subplots(figsize=(10, 4))
-ax.bar(filtered_df['timestamp'], filtered_df['price_change'], 
-       color=filtered_df['price_change'].apply(lambda x: 'green' if x > 0 else 'red'))
-ax.set_ylabel("Price Change ($)")
-ax.set_xlabel("Time")
-st.pyplot(fig)
+# Bar Chart of Price Change
+st.subheader("Hourly Price Change Bar Chart")
+st.bar_chart(data=filtered_df.set_index('timestamp')['price_change'])
 
 # Show Raw Data
 if st.checkbox("Show raw data"):
